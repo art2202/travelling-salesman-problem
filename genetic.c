@@ -5,18 +5,55 @@
 
 #define NUM_CIDADES 10
 #define TAM_POPULACAO 50
-#define NUM_GERACOES 100
+#define NUM_GERACOES 10000
 #define TAXA_MUTACAO 0.1
 
 typedef struct {
     int genes[NUM_CIDADES];
-    int fitness;
+    double fitness;
 } Cromossomo;
 
 typedef struct {
     double x;
     double y;
 } Coordenada;
+
+Coordenada cidades[NUM_CIDADES] = {
+        {0, 0},   // Cidade 0
+        {1, 1},   // Cidade 1
+        {2, 3},   // Cidade 2
+        {5, 2},   // Cidade 3
+        {6, 3},   // Cidade 4
+        {7, 7},   // Cidade 5
+        {8, 5},   // Cidade 6
+        {9, 6},   // Cidade 7
+        {3, 8},   // Cidade 8
+        {4, 4}    // Cidade 9
+};
+
+
+
+double calcularDistancia(Coordenada cidadeA, Coordenada cidadeB) {
+    double distancia = sqrt(pow(cidadeA.x - cidadeB.x, 2) + pow(cidadeA.y - cidadeB.y, 2));
+    return distancia;
+}
+
+double calcularFitness(Cromossomo *cromossomo) {
+    double fitness = 0;
+    int i;
+    for (i = 0; i < NUM_CIDADES - 1; i++) {
+        int cidadeA = cromossomo->genes[i];
+        int cidadeB = cromossomo->genes[i + 1];
+        fitness += calcularDistancia(cidades[cidadeA], cidades[cidadeB]);
+    }
+    // Adiciona a distância entre a última cidade e a primeira cidade
+    int cidadeA = cromossomo->genes[NUM_CIDADES - 1];
+    int cidadeB = cromossomo->genes[0];
+    fitness += calcularDistancia(cidades[cidadeA], cidades[cidadeB]);
+
+    cromossomo->fitness = fitness;
+    return fitness;
+}
 
 void inicializarPopulacao(Cromossomo populacao[]) {
     int i, j;
@@ -31,30 +68,8 @@ void inicializarPopulacao(Cromossomo populacao[]) {
             populacao[i].genes[j] = populacao[i].genes[randIndex];
             populacao[i].genes[randIndex] = temp;
         }
-        populacao[i].fitness = 0;
+        populacao[i].fitness = calcularFitness(&populacao[i]);
     }
-}
-
-double calcularDistancia(Coordenada cidadeA, Coordenada cidadeB) {
-    double distancia = sqrt(pow(cidadeA.x - cidadeB.x, 2) + pow(cidadeA.y - cidadeB.y, 2));
-    return distancia;
-}
-
-int calcularFitness(Cromossomo *cromossomo, Coordenada cidades[]) {
-    int fitness = 0;
-    int i;
-    for (i = 0; i < NUM_CIDADES - 1; i++) {
-        int cidadeA = cromossomo->genes[i];
-        int cidadeB = cromossomo->genes[i + 1];
-        fitness += calcularDistancia(cidades[cidadeA], cidades[cidadeB]);
-    }
-    // Adiciona a distância entre a última cidade e a primeira cidade
-    int cidadeA = cromossomo->genes[NUM_CIDADES - 1];
-    int cidadeB = cromossomo->genes[0];
-    fitness += calcularDistancia(cidades[cidadeA], cidades[cidadeB]);
-
-    cromossomo->fitness = fitness;
-    return fitness;
 }
 
 void ordenarPopulacao(Cromossomo populacao[]) {
@@ -106,7 +121,7 @@ void realizarMutacao(Cromossomo *cromossomo) {
 }
 
 void imprimirMelhorCromossomo(Cromossomo *cromossomo) {
-    printf("Melhor cromossomo (Fitness: %d): ", cromossomo->fitness);
+    printf("Melhor cromossomo (Fitness: %lf): ", cromossomo->fitness);
     int i;
     for (i = 0; i < NUM_CIDADES; i++) {
         printf("%d ", cromossomo->genes[i]);
@@ -117,18 +132,7 @@ void imprimirMelhorCromossomo(Cromossomo *cromossomo) {
 int main() {
     srand(time(NULL));
 
-    Coordenada cidades[NUM_CIDADES] = {
-            {0, 0},   // Cidade 0
-            {1, 1},   // Cidade 1
-            {2, 3},   // Cidade 2
-            {5, 2},   // Cidade 3
-            {6, 3},   // Cidade 4
-            {7, 7},   // Cidade 5
-            {8, 5},   // Cidade 6
-            {9, 6},   // Cidade 7
-            {3, 8},   // Cidade 8
-            {4, 4}    // Cidade 9
-    };
+    Cromossomo melhorCromossomo;
 
     Cromossomo populacao[TAM_POPULACAO];
     Cromossomo novaPopulacao[TAM_POPULACAO];
@@ -136,19 +140,24 @@ int main() {
     inicializarPopulacao(populacao);
 
     int geracao;
+    melhorCromossomo = populacao[0];
     for (geracao = 0; geracao < NUM_GERACOES; geracao++) {
         int i;
 
         // Avaliar o fitness de cada cromossomo
         for (i = 0; i < TAM_POPULACAO; i++) {
-            calcularFitness(&populacao[i], cidades);
+            calcularFitness(&populacao[i]);
         }
 
         // Ordenar a população pelo fitness
         ordenarPopulacao(populacao);
 
         // Imprimir o melhor cromossomo da geração atual
-        imprimirMelhorCromossomo(&populacao[0]);
+//        imprimirMelhorCromossomo(&populacao[0]);
+
+        if(populacao[0].fitness < melhorCromossomo.fitness){
+            melhorCromossomo = populacao[0];
+        }
 
         // Realizar crossover e mutação para criar a nova população
         for (i = 0; i < TAM_POPULACAO; i += 2) {
@@ -170,5 +179,6 @@ int main() {
         }
     }
 
+    imprimirMelhorCromossomo(&melhorCromossomo);
     return 0;
 }
