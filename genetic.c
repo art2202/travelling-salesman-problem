@@ -3,9 +3,9 @@
 #include <math.h>
 #include <time.h>
 
-#define NUM_CIDADES 10
+#define NUM_CIDADES 50
 #define TAM_POPULACAO 50
-#define NUM_GERACOES 10000
+#define NUM_GERACOES 50000
 #define TAXA_MUTACAO 0.1
 
 typedef struct {
@@ -18,20 +18,22 @@ typedef struct {
     double y;
 } Coordenada;
 
-Coordenada cidades[NUM_CIDADES] = {
-        {0, 0},   // Cidade 0
-        {1, 1},   // Cidade 1
-        {2, 3},   // Cidade 2
-        {5, 2},   // Cidade 3
-        {6, 3},   // Cidade 4
-        {7, 7},   // Cidade 5
-        {8, 5},   // Cidade 6
-        {9, 6},   // Cidade 7
-        {3, 8},   // Cidade 8
-        {4, 4}    // Cidade 9
-};
+Coordenada cidades[NUM_CIDADES];
 
+void lerCoordenadas() {
+    FILE* arquivo = fopen("C:\\Users\\Arthu\\CLionProjects\\travelling-salesman-problem\\coordenadas", "r");
+    if (arquivo == NULL) {
+        printf("Erro ao abrir o arquivo. Atualize o path para pegar o da sua maquina e tente novamente. \n");
+        exit(1);
+    }
 
+    int i;
+    for (i = 0; i < NUM_CIDADES; i++) {
+        fscanf(arquivo, "%lf %lf", &cidades[i].x, &cidades[i].y);
+    }
+
+    fclose(arquivo);
+}
 
 double calcularDistancia(Coordenada cidadeA, Coordenada cidadeB) {
     double distancia = sqrt(pow(cidadeA.x - cidadeB.x, 2) + pow(cidadeA.y - cidadeB.y, 2));
@@ -132,6 +134,7 @@ void imprimirMelhorCromossomo(Cromossomo *cromossomo) {
 int main() {
     srand(time(NULL));
 
+    lerCoordenadas();
     Cromossomo melhorCromossomo;
 
     Cromossomo populacao[TAM_POPULACAO];
