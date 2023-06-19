@@ -1,22 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
-#include <time.h>
-
-#define NUM_CIDADES 50
-#define TAM_POPULACAO 50
-#define NUM_GERACOES 50000
-#define TAXA_MUTACAO 0.1
-
-typedef struct {
-    int genes[NUM_CIDADES];
-    double fitness;
-} Cromossomo;
-
-typedef struct {
-    double x;
-    double y;
-} Coordenada;
+#include "cromossomo.h"
 
 Coordenada cidades[NUM_CIDADES];
 
@@ -35,9 +17,43 @@ void lerCoordenadas() {
     fclose(arquivo);
 }
 
+double calcularRaizQuadrada(double x) {
+    if (x == 0.0) {
+        return 0.0;
+    }
+
+    double estimativa = x;
+    double erro = 1e-6; // Precisão desejada
+    double diferenca;
+
+    do {
+        double novaEstimativa = (estimativa + x / estimativa) / 2.0;
+        diferenca = novaEstimativa - estimativa;
+        estimativa = novaEstimativa;
+    } while (diferenca > erro || diferenca < -erro);
+
+    return estimativa;
+}
+
 double calcularDistancia(Coordenada cidadeA, Coordenada cidadeB) {
-    double distancia = sqrt(pow(cidadeA.x - cidadeB.x, 2) + pow(cidadeA.y - cidadeB.y, 2));
-    return distancia;
+//    return sqrt(pow(cidadeA.x - cidadeB.x, 2) + pow(cidadeA.y - cidadeB.y, 2));
+    return sqrt((cidadeA.x - cidadeB.x) * (cidadeA.x - cidadeB.x) + (cidadeA.y - cidadeB.y) * (cidadeA.y - cidadeB.y));
+}
+void inicializarPopulacao(Cromossomo populacao[]) {
+    int i, j;
+    for (i = 0; i < TAM_POPULACAO; i++) {
+        for (j = 0; j < NUM_CIDADES; j++) {
+            populacao[i].genes[j] = j;
+        }
+        // Embaralhar os genes do cromossomo
+        for (j = NUM_CIDADES - 1; j > 0; j--) {
+            int randIndex = rand() % (j + 1);
+            int temp = populacao[i].genes[j];
+            populacao[i].genes[j] = populacao[i].genes[randIndex];
+            populacao[i].genes[randIndex] = temp;
+        }
+        populacao[i].fitness = calcularFitness(&populacao[i]);
+    }
 }
 
 double calcularFitness(Cromossomo *cromossomo) {
@@ -57,24 +73,37 @@ double calcularFitness(Cromossomo *cromossomo) {
     return fitness;
 }
 
-void inicializarPopulacao(Cromossomo populacao[]) {
-    int i, j;
-    for (i = 0; i < TAM_POPULACAO; i++) {
-        for (j = 0; j < NUM_CIDADES; j++) {
-            populacao[i].genes[j] = j;
+void trocarCromossomos(Cromossomo *a, Cromossomo *b) {
+    Cromossomo temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
+int particionar(Cromossomo populacao[], int inicio, int fim) {
+    int pivo = populacao[fim].fitness;
+    int i = inicio - 1;
+    int j;
+
+    for (j = inicio; j <= fim - 1; j++) {
+        if (populacao[j].fitness <= pivo) {
+            i++;
+            trocarCromossomos(&populacao[i], &populacao[j]);
         }
-        // Embaralhar os genes do cromossomo
-        for (j = NUM_CIDADES - 1; j > 0; j--) {
-            int randIndex = rand() % (j + 1);
-            int temp = populacao[i].genes[j];
-            populacao[i].genes[j] = populacao[i].genes[randIndex];
-            populacao[i].genes[randIndex] = temp;
-        }
-        populacao[i].fitness = calcularFitness(&populacao[i]);
+    }
+
+    trocarCromossomos(&populacao[i + 1], &populacao[fim]);
+    return (i + 1);
+}
+
+void quicksort(Cromossomo populacao[], int inicio, int fim) {
+    if (inicio < fim) {
+        int indicePivo = particionar(populacao, inicio, fim);
+        quicksort(populacao, inicio, indicePivo - 1);
+        quicksort(populacao, indicePivo + 1, fim);
     }
 }
 
-void ordenarPopulacao(Cromossomo populacao[]) {
+void bubbleSort(Cromossomo populacao[]) {
     int i, j;
     for (i = 0; i < TAM_POPULACAO - 1; i++) {
         for (j = 0; j < TAM_POPULACAO - i - 1; j++) {
@@ -85,6 +114,11 @@ void ordenarPopulacao(Cromossomo populacao[]) {
             }
         }
     }
+}
+
+void ordenarPopulacao(Cromossomo populacao[]) {
+//    bubbleSort(populacao);
+    quicksort(populacao, 0, TAM_POPULACAO - 1);
 }
 
 void realizarCrossover(Cromossomo *pai1, Cromossomo *pai2, Cromossomo *filho) {
@@ -132,6 +166,7 @@ void imprimirMelhorCromossomo(Cromossomo *cromossomo) {
 }
 
 int main() {
+    clock_t start = clock();
     srand(time(NULL));
 
     lerCoordenadas();
@@ -154,9 +189,6 @@ int main() {
 
         // Ordenar a população pelo fitness
         ordenarPopulacao(populacao);
-
-        // Imprimir o melhor cromossomo da geração atual
-//        imprimirMelhorCromossomo(&populacao[0]);
 
         if(populacao[0].fitness < melhorCromossomo.fitness){
             melhorCromossomo = populacao[0];
@@ -183,5 +215,9 @@ int main() {
     }
 
     imprimirMelhorCromossomo(&melhorCromossomo);
+
+    clock_t end = clock();
+    double elapsed = (double) (end - start) / CLOCKS_PER_SEC;
+    printf("\nTempo: %.5f segundos\n", elapsed);
     return 0;
 }
