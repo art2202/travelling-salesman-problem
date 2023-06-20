@@ -1,11 +1,13 @@
 // Fazer condição de parada por precisão
 
 #include "cromossomo.h"
+#include <omp.h>
 
 int main()
 {
     clock_t start = clock();
-    srand(time(NULL));
+    unsigned long seed = mix(clock(), time(NULL), getpid());
+    srand(seed);
 
     Coordenada *cidades = (Coordenada *)malloc(sizeof(Coordenada) * NUM_CIDADES);
     Cromossomo *populacao = (Cromossomo *)malloc(sizeof(Cromossomo) * TAM_POPULACAO);
