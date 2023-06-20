@@ -1,3 +1,5 @@
+// Fazer condição de parada por precisão
+
 #include "cromossomo.h"
 
 int main()
