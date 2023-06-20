@@ -1,1 +1,1 @@
-# travelling salesman problem
+# Multi-threaded algorithm to solve the Travelling Salesman Problem
