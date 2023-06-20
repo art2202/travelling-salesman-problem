@@ -1,5 +1,3 @@
-// Fazer condição de parada por precisão
-
 #include "cromossomo.h"
 #include <omp.h>
 
@@ -19,10 +17,6 @@ int main()
         printf("Deu ruim na alocação.\n");
         exit(EXIT_FAILURE);
     }
-
-    clock_t end = clock();
-    double elapsed = (double)(end - start) / CLOCKS_PER_SEC;
-    printf("\nTempo: %.5f segundos\n", elapsed);
 
     lerCoordenadas(&cidades);
     inicializarPopulacao(&populacao, &cidades);

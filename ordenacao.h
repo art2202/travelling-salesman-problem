@@ -18,26 +18,33 @@ void trocarCromossomos(Cromossomo *a, Cromossomo *b)
 
 int particionar(Cromossomo **populacao, int inicio, int fim)
 {
-    int pivo = (*populacao)[fim].fitness;
-    int i = inicio - 1;
-    int j;
+    double pivo = (*populacao)[inicio].fitness;
+    int i = inicio;
+    int j = fim;
 
-    for (j = inicio; j <= fim - 1; j++)
+    while (i <= j)
     {
-        if ((*populacao)[j].fitness <= pivo)
-        {
+        while ((*populacao)[i].fitness < pivo && i < fim)
             i++;
+        while ((*populacao)[j].fitness > pivo && j > 0 && j > i)
+            j--;
+        if (i < j)
+        {
             trocarCromossomos(&(*populacao)[i], &(*populacao)[j]);
+            i++;
+            j--;
         }
+        else
+            break;
     }
 
-    trocarCromossomos(&(*populacao)[i + 1], &(*populacao)[fim]);
-    return (i + 1);
+    trocarCromossomos(&(*populacao)[inicio], &(*populacao)[j]);
+    return j;
 }
 
 void quicksort(Cromossomo **populacao, int inicio, int fim)
 {
-    if (inicio < fim)
+    if (fim - inicio > 1)
     {
         int indicePivo = particionar(populacao, inicio, fim);
         quicksort(populacao, inicio, indicePivo - 1);
