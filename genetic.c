@@ -18,6 +18,10 @@ int main()
         exit(EXIT_FAILURE);
     }
 
+    clock_t end = clock();
+    double elapsed = (double)(end - start) / CLOCKS_PER_SEC;
+    printf("\nTempo: %.5f segundos\n", elapsed);
+
     lerCoordenadas(&cidades);
     inicializarPopulacao(&populacao, &cidades);
 

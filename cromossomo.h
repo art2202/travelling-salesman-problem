@@ -24,7 +24,13 @@ void lerCoordenadas(Coordenada **cidades)
     }
 
     for (i = 0; i < NUM_CIDADES; i++)
-        fscanf(arquivo, "%lf %lf", &(*cidades)[i].x, &(*cidades)[i].y);
+    {
+        if (!fscanf(arquivo, "%lf %lf", &(*cidades)[i].x, &(*cidades)[i].y))
+        {
+            printf("Erro na leitura do arquivo.\n");
+            exit(EXIT_FAILURE);
+        }
+    }
 
     fclose(arquivo);
 }
