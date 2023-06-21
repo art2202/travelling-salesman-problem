@@ -7,8 +7,8 @@
 #include <time.h>
 #include <unistd.h>
 
-#define NUM_CIDADES 50
-#define TAM_POPULACAO 4950
+#define NUM_CIDADES 100
+#define TAM_POPULACAO 20
 #define NUM_GERACOES 1000
 #define TAXA_MUTACAO 0.0
 #define PRECISAO 1e-2
