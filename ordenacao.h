@@ -11,8 +11,8 @@ void bubbleSort(Cromossomo **populacao);
 
 void ordenarPopulacao(Cromossomo **populacao)
 {
-    // bubbleSort(populacao);
-    quicksort(populacao, 0, TAM_POPULACAO - 1);
+     bubbleSort(populacao);
+//    quicksort(populacao, 0, TAM_POPULACAO - 1);
 }
 
 void trocarCromossomos(Cromossomo *a, Cromossomo *b)
