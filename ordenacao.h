@@ -3,11 +3,17 @@
 
 #include "struct_e_param.h"
 
+void ordenarPopulacao(Cromossomo **populacao);
 void trocarCromossomos(Cromossomo *a, Cromossomo *b);
 int particionar(Cromossomo **populacao, int inicio, int fim);
 void quicksort(Cromossomo **populacao, int inicio, int fim);
 void bubbleSort(Cromossomo **populacao);
-void ordenarPopulacao(Cromossomo **populacao);
+
+void ordenarPopulacao(Cromossomo **populacao)
+{
+    // bubbleSort(populacao);
+    quicksort(populacao, 0, TAM_POPULACAO - 1);
+}
 
 void trocarCromossomos(Cromossomo *a, Cromossomo *b)
 {
@@ -67,12 +73,6 @@ void bubbleSort(Cromossomo **populacao)
             }
         }
     }
-}
-
-void ordenarPopulacao(Cromossomo **populacao)
-{
-    //    bubbleSort(populacao);
-    quicksort(populacao, 0, TAM_POPULACAO - 1);
 }
 
 #endif

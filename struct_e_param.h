@@ -9,9 +9,9 @@
 
 #define NUM_CIDADES 50
 #define TAM_POPULACAO 4950
-#define NUM_GERACOES 5000
+#define NUM_GERACOES 1000
 #define TAXA_MUTACAO 0.0
-#define PRECISAO 1e-6
+#define PRECISAO 1e-2
 
 typedef struct Cromossomo
 {

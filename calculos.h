@@ -13,12 +13,12 @@ double calcularRaizQuadrada(double x)
         return x;
 
     double estimativa = x;
-    double erro = PRECISAO; // Precisão desejada
+    double erro = PRECISAO;
     double diferenca;
 
     do
     {
-        double novaEstimativa = (estimativa + x / estimativa) / 2.0;
+        double novaEstimativa = (estimativa + x) / (estimativa * 2.0);
         diferenca = novaEstimativa - estimativa;
         estimativa = novaEstimativa;
     } while (diferenca > erro || diferenca < -erro);
@@ -28,8 +28,9 @@ double calcularRaizQuadrada(double x)
 
 double calcularDistancia(Coordenada cidadeA, Coordenada cidadeB)
 {
-    //    return sqrt(pow(cidadeA.x - cidadeB.x, 2) + pow(cidadeA.y - cidadeB.y, 2)); // Pré-otimização
+    //  return sqrt(pow(cidadeA.x - cidadeB.x, 2) + pow(cidadeA.y - cidadeB.y, 2)); // Pré-otimização
     return sqrt((cidadeA.x - cidadeB.x) * (cidadeA.x - cidadeB.x) + (cidadeA.y - cidadeB.y) * (cidadeA.y - cidadeB.y));
+    //  return calcularRaizQuadrada((cidadeA.x - cidadeB.x) * (cidadeA.x - cidadeB.x) + (cidadeA.y - cidadeB.y) * (cidadeA.y - cidadeB.y)); // NÃO ESTÁ FUNCIONANDO
 }
 
 unsigned long mix(unsigned long a, unsigned long b, unsigned long c)

@@ -3,6 +3,7 @@
 
 int main()
 {
+
     clock_t start = clock();
     unsigned long seed = mix(clock(), time(NULL), getpid());
     srand(seed);
@@ -22,6 +23,7 @@ int main()
     inicializarPopulacao(&populacao, &cidades);
 
     melhorCromossomo = populacao[0];
+
     for (int geracao = 0; geracao < NUM_GERACOES; geracao++)
     {
         // Avaliar o fitness de cada cromossomo
