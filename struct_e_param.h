@@ -7,10 +7,10 @@
 #include <time.h>
 #include <unistd.h>
 
-#define NUM_CIDADES 100
-#define TAM_POPULACAO 20
-#define NUM_GERACOES 1000
-#define TAXA_MUTACAO 0.0
+#define NUM_CIDADES 240
+#define TAM_POPULACAO 2400
+#define NUM_GERACOES 1200
+#define TAXA_MUTACAO 0.01
 #define PRECISAO 1e-2
 
 typedef struct Cromossomo
