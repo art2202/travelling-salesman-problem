@@ -24,38 +24,41 @@ int main()
 
     melhorCromossomo = populacao[0];
 
-    for (int geracao = 0; geracao < NUM_GERACOES; geracao++)
+    #pragma omp parallel
     {
-        // Avaliar o fitness de cada cromossomo
-        for (int i = 0; i < TAM_POPULACAO; i++)
-            calcularFitness(&populacao[i], &cidades);
+        #pragma omp for
+        for (int geracao = 0; geracao < NUM_GERACOES; geracao++) {
+            // Avaliar o fitness de cada cromossomo
 
-        // Ordenar a população pelo fitness
-        ordenarPopulacao(&populacao);
+            for (int i = 0; i < TAM_POPULACAO; i++)
+                calcularFitness(&populacao[i], &cidades);
 
-        if (populacao[0].fitness < melhorCromossomo.fitness)
-            melhorCromossomo = populacao[0];
+            // Ordenar a população pelo fitness
+            ordenarPopulacao(&populacao);
 
-        // Realizar crossover e mutação para criar a nova população
-        for (int i = 0; i < TAM_POPULACAO; i += 2)
-        {
-            Cromossomo *pai1 = &populacao[i];
-            Cromossomo *pai2 = &populacao[i + 1];
-            Cromossomo *filho1 = &novaPopulacao[i];
-            Cromossomo *filho2 = &novaPopulacao[i + 1];
+            if (populacao[0].fitness < melhorCromossomo.fitness)
+                melhorCromossomo = populacao[0];
 
-            realizarCrossover(pai1, pai2, filho1);
-            realizarCrossover(pai2, pai1, filho2);
+            // Realizar crossover e mutação para criar a nova população
+            for (int i = 0; i < TAM_POPULACAO; i += 2) {
+                Cromossomo *pai1 = &populacao[i];
+                Cromossomo *pai2 = &populacao[i + 1];
+                Cromossomo *filho1 = &novaPopulacao[i];
+                Cromossomo *filho2 = &novaPopulacao[i + 1];
 
-            realizarMutacao(filho1);
-            realizarMutacao(filho2);
+                realizarCrossover(pai1, pai2, filho1);
+                realizarCrossover(pai2, pai1, filho2);
+
+                realizarMutacao(filho1);
+                realizarMutacao(filho2);
+            }
+
+//             Atualizar a população atual com a nova população
+            for (int i = 0; i < TAM_POPULACAO; i++)
+                populacao[i] = novaPopulacao[i];
         }
-
-        // Atualizar a população atual com a nova população
-        for (int i = 0; i < TAM_POPULACAO; i++)
-            populacao[i] = novaPopulacao[i];
     }
-
+    melhorCromossomo.fitness = calcularFitness(&melhorCromossomo, &cidades);
     imprimirMelhorCromossomo(&melhorCromossomo);
 
     clock_t end = clock();

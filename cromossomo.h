@@ -14,8 +14,8 @@ void imprimirMelhorCromossomo(Cromossomo *cromossomo);
 void lerCoordenadas(Coordenada **cidades)
 {
     int i;
-    FILE *arquivo = fopen("coordenadas", "r");
-    //  FILE* arquivo = fopen("C:\\Users\\Arthu\\CLionProjects\\travelling-salesman-problem\\coordenadas", "r");
+//    FILE *arquivo = fopen("coordenadas", "r");
+      FILE* arquivo = fopen("C:\\Users\\Arthu\\CLionProjects\\travelling-salesman-problem\\coordenadas", "r");
 
     if (!arquivo)
     {
@@ -58,14 +58,15 @@ void inicializarPopulacao(Cromossomo **populacao, Coordenada **cidades)
 
 double calcularFitness(Cromossomo *cromossomo, Coordenada **cidades)
 {
+
     double fitness = 0;
     int i;
-    for (i = 0; i < NUM_CIDADES - 1; i++)
-    {
-        int cidadeA = cromossomo->genes[i];
-        int cidadeB = cromossomo->genes[i + 1];
-        fitness += calcularDistancia((*cidades)[cidadeA], (*cidades)[cidadeB]);
-    }
+
+        for (i = 0; i < NUM_CIDADES - 1; i++) {
+            int cidadeA = cromossomo->genes[i];
+            int cidadeB = cromossomo->genes[i + 1];
+            fitness += calcularDistancia((*cidades)[cidadeA], (*cidades)[cidadeB]);
+        }
     // Adiciona a distância entre a última cidade e a primeira cidade
     int cidadeA = cromossomo->genes[NUM_CIDADES - 1];
     int cidadeB = cromossomo->genes[0];
