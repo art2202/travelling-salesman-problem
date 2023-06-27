@@ -10,6 +10,7 @@ void inicializarPopulacao(Cromossomo **populacao, Coordenada **cidades);
 void realizarCrossover(Cromossomo *pai1, Cromossomo *pai2, Cromossomo *filho);
 void realizarMutacao(Cromossomo *cromossomo);
 void imprimirMelhorCromossomo(Cromossomo *cromossomo);
+Cromossomo getMenorCromossomo(Cromossomo resultados[], int size);
 
 void lerCoordenadas(Coordenada **cidades)
 {
