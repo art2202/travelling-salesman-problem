@@ -8,25 +8,28 @@ int main()
     srand(seed);
 
     Coordenada *cidades = (Coordenada *)malloc(sizeof(Coordenada) * NUM_CIDADES);
-    Cromossomo *populacao = (Cromossomo *)malloc(sizeof(Cromossomo) * TAM_POPULACAO);
-    Cromossomo *novaPopulacao = (Cromossomo *)malloc(sizeof(Cromossomo) * TAM_POPULACAO);
+
     Cromossomo melhorCromossomo;
 
-    if (!cidades || !populacao || !novaPopulacao)
+    if (!cidades)
     {
         printf("Deu ruim na alocação.\n");
         exit(EXIT_FAILURE);
     }
 
     lerCoordenadas(&cidades);
-    inicializarPopulacao(&populacao, &cidades);
 
-    melhorCromossomo = populacao[0];
 
     Cromossomo resultados[NUM_THREADS];
 
 #pragma omp parallel num_threads(NUM_THREADS)
     {
+
+        Cromossomo *populacao = (Cromossomo *)malloc(sizeof(Cromossomo) * TAM_POPULACAO);
+        Cromossomo *novaPopulacao = (Cromossomo *)malloc(sizeof(Cromossomo) * TAM_POPULACAO);
+
+        inicializarPopulacao(&populacao, &cidades);
+        melhorCromossomo = populacao[0];
 
         int threadID = omp_get_thread_num();
         for (int geracao = 0; geracao < NUM_GERACOES; geracao++)
@@ -66,7 +69,6 @@ int main()
 
     melhorCromossomo = getMenorCromossomo(resultados, omp_get_num_threads());
 
-    melhorCromossomo.fitness = calcularFitness(&melhorCromossomo, &cidades);
     imprimirMelhorCromossomo(&melhorCromossomo);
 
     clock_t end = clock();

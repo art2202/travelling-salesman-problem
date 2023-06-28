@@ -7,10 +7,10 @@
 #include <time.h>
 #include <unistd.h>
 
-#define NUM_CIDADES 20
-#define TAM_POPULACAO 200
-#define NUM_GERACOES 200
-#define TAXA_MUTACAO 0.0001
+#define NUM_CIDADES 200
+#define TAM_POPULACAO 600
+#define NUM_GERACOES 600
+#define TAXA_MUTACAO 0.1
 #define PRECISAO 1e-2
 #define NUM_THREADS 12
 
