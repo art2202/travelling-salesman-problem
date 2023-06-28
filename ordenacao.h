@@ -3,16 +3,39 @@
 
 #include "struct_e_param.h"
 
+Cromossomo getMenorCromossomo(Cromossomo resultados[], int size);
 void ordenarPopulacao(Cromossomo **populacao);
 void trocarCromossomos(Cromossomo *a, Cromossomo *b);
 int particionar(Cromossomo **populacao, int inicio, int fim);
 void quicksort(Cromossomo **populacao, int inicio, int fim);
 void bubbleSort(Cromossomo **populacao);
 
+Cromossomo getMenorCromossomo(Cromossomo resultados[], int size)
+{
+    int i, j;
+    Cromossomo temp;
+
+    for (i = 0; i < size - 1; i++)
+    {
+        for (j = 0; j < size - i - 1; j++)
+        {
+            if (resultados[j].fitness > resultados[j + 1].fitness)
+            {
+                // Troca os elementos
+                temp = resultados[j];
+                resultados[j] = resultados[j + 1];
+                resultados[j + 1] = temp;
+            }
+        }
+    }
+
+    return resultados[0];
+}
+
 void ordenarPopulacao(Cromossomo **populacao)
 {
-     bubbleSort(populacao);
-//    quicksort(populacao, 0, TAM_POPULACAO - 1);
+    bubbleSort(populacao);
+    // quicksort(populacao, 0, TAM_POPULACAO - 1);
 }
 
 void trocarCromossomos(Cromossomo *a, Cromossomo *b)
@@ -30,9 +53,9 @@ int particionar(Cromossomo **populacao, int inicio, int fim)
 
     while (i <= j)
     {
-        while ((*populacao)[i].fitness < pivo && i < j)
+        while ((*populacao)[i].fitness < pivo && i <= j)
             i++;
-        while ((*populacao)[j].fitness > pivo && j > i - 1)
+        while ((*populacao)[j].fitness > pivo && j >= i - 1)
             j--;
         if (i < j)
         {
