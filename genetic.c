@@ -167,6 +167,8 @@ void imprimirMelhorCromossomo(Cromossomo *cromossomo) {
 }
 
 int main(int argc, char** argv) {
+    double start_time, end_time;
+
     MPI_Init(&argc, &argv);
 
 //    clock_t start = clock();
@@ -176,7 +178,8 @@ int main(int argc, char** argv) {
     MPI_Comm_size(MPI_COMM_WORLD, &numProcessos);
     MPI_Comm_rank(MPI_COMM_WORLD, &idProcesso);
 
-    printf("totalProcs: %d, idProc %d\n", numProcessos, idProcesso);
+// Início da medição de tempo
+    start_time = MPI_Wtime();
 
     if (idProcesso == 0) {
         lerCoordenadas();
@@ -232,9 +235,11 @@ int main(int argc, char** argv) {
 
     imprimirMelhorCromossomo(&melhorCromossomo);
 
-//    clock_t end = clock();
-//    double elapsed = (double) (end - start) / CLOCKS_PER_SEC;
-//    printf("\nTempo: %.5f segundos\n", elapsed);
+    end_time = MPI_Wtime();
+    if (idProcesso == 0) {
+        double elapsed_time = end_time - start_time;
+        printf("Tempo decorrido: %.6f segundos\n", elapsed_time);
+    }
     MPI_Finalize();
     return 0;
 }
