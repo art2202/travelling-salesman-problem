@@ -171,8 +171,10 @@ int main(int argc, char** argv) {
 
     MPI_Init(&argc, &argv);
 
-//    clock_t start = clock();
-//    srand(time(NULL));
+    // Definir o tipo MPI para a estrutura Cromossomo
+    MPI_Datatype MPI_CROMOSSOMO;
+    MPI_Type_contiguous(sizeof(Cromossomo), MPI_BYTE, &MPI_CROMOSSOMO);
+    MPI_Type_commit(&MPI_CROMOSSOMO);
 
     int numProcessos, idProcesso;
     MPI_Comm_size(MPI_COMM_WORLD, &numProcessos);
@@ -181,28 +183,36 @@ int main(int argc, char** argv) {
 // Início da medição de tempo
     start_time = MPI_Wtime();
 
+//    lê o arquivo de coordenadas somente no processo 0
     if (idProcesso == 0) {
         lerCoordenadas();
     }
 
+//    envia as coordenadas (array cidades) via broadcast  para todos os outros processos
     MPI_Bcast(cidades, NUM_CIDADES * sizeof(Coordenada), MPI_BYTE, 0, MPI_COMM_WORLD);
 
     Cromossomo melhorCromossomo;
 
     Cromossomo populacao[TAM_POPULACAO];
-    Cromossomo novaPopulacao[TAM_POPULACAO / numProcessos];
 
+//    divide para enviar uma parte de tamanho igual para cada processo, assim cada processo tem uma parte da novaPopulacao distinta, so q de mesmo tamanho
+    Cromossomo novaPopulacao[TAM_POPULACAO / numProcessos];
 
     inicializarPopulacao(populacao);
 
+//    o cara q divide, ele pega populacao e divide em (TAM_POPULACAO/numProcessos) partes e coloca cada parte no novaPopulacao do respectivo processo
+    MPI_Scatter(populacao, TAM_POPULACAO / numProcessos, MPI_CROMOSSOMO, novaPopulacao, TAM_POPULACAO / numProcessos, MPI_CROMOSSOMO, 0, MPI_COMM_WORLD);
 
-    int geracao;
     melhorCromossomo = populacao[0];
-    for (geracao = 0; geracao < NUM_GERACOES; geracao++) {
-        int i;
+    for (int geracao = 0; geracao < NUM_GERACOES; geracao++) {
+
+
+//        e usada para coletar as populacoes locais de todos os processos no processo de id 0 e atualizar a populacao global.
+        MPI_Gather(novaPopulacao, (TAM_POPULACAO / numProcessos) * sizeof(Cromossomo), MPI_BYTE, populacao,
+                   (TAM_POPULACAO / numProcessos) * sizeof(Cromossomo), MPI_BYTE, 0, MPI_COMM_WORLD);
 
         // Avaliar o fitness de cada cromossomo
-        for (i = 0; i < TAM_POPULACAO; i++) {
+        for (int i = 0; i < TAM_POPULACAO; i++) {
             calcularFitness(&populacao[i]);
         }
 
@@ -213,24 +223,34 @@ int main(int argc, char** argv) {
             melhorCromossomo = populacao[0];
         }
 
-        // Realizar crossover e mutação para criar a nova população
-        for (i = 0; i < TAM_POPULACAO; i += 2) {
-            Cromossomo *pai1 = &populacao[i];
-            Cromossomo *pai2 = &populacao[i + 1];
-            Cromossomo *filho1 = &novaPopulacao[i];
-            Cromossomo *filho2 = &novaPopulacao[i + 1];
+        if (idProcesso == 0) {
 
-            realizarCrossover(pai1, pai2, filho1);
-            realizarCrossover(pai2, pai1, filho2);
+            // Realizar crossover e mutação para criar a nova população
+            for (int i = 0; i < TAM_POPULACAO; i += 2) {
+                Cromossomo *pai1 = &populacao[i];
+                Cromossomo *pai2 = &populacao[i + 1];
+                Cromossomo *filho1 = &novaPopulacao[i];
+                Cromossomo *filho2 = &novaPopulacao[i + 1];
 
-            realizarMutacao(filho1);
-            realizarMutacao(filho2);
+                realizarCrossover(pai1, pai2, filho1);
+                realizarCrossover(pai2, pai1, filho2);
+
+                realizarMutacao(filho1);
+                realizarMutacao(filho2);
+            }
+
+            // Atualizar a população atual com a nova população
+            for (int i = 0; i < TAM_POPULACAO; i++) {
+                populacao[i] = novaPopulacao[i];
+            }
         }
 
-        // Atualizar a população atual com a nova população
-        for (i = 0; i < TAM_POPULACAO; i++) {
-            populacao[i] = novaPopulacao[i];
-        }
+//        envia populacao pos mutacao para todos os processos
+        MPI_Bcast(populacao, TAM_POPULACAO * sizeof(Cromossomo), MPI_BYTE, 0, MPI_COMM_WORLD);
+
+//        divide em partes iguais a populacao apos mutacao igual na linha 204, mas agora dentro do loop
+        MPI_Scatter(populacao, TAM_POPULACAO / numProcessos, MPI_CROMOSSOMO, novaPopulacao, TAM_POPULACAO / numProcessos, MPI_CROMOSSOMO, 0, MPI_COMM_WORLD);
+
     }
 
     imprimirMelhorCromossomo(&melhorCromossomo);
