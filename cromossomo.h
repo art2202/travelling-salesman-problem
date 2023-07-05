@@ -7,9 +7,9 @@
 #include <time.h>
 
 #define NUM_CIDADES 50
-#define TAM_POPULACAO 50
-#define NUM_GERACOES 50000
-#define TAXA_MUTACAO 0.1
+#define TAM_POPULACAO 500
+#define NUM_GERACOES 5000
+#define TAXA_MUTACAO 0.001
 
 typedef struct {
     int genes[NUM_CIDADES];

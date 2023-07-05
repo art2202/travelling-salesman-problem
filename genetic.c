@@ -1,4 +1,5 @@
 #include "cromossomo.h"
+#include <mpi.h>
 
 Coordenada cidades[NUM_CIDADES];
 
@@ -165,17 +166,32 @@ void imprimirMelhorCromossomo(Cromossomo *cromossomo) {
     printf("\n");
 }
 
-int main() {
-    clock_t start = clock();
-    srand(time(NULL));
+int main(int argc, char** argv) {
+    MPI_Init(&argc, &argv);
 
-    lerCoordenadas();
+//    clock_t start = clock();
+//    srand(time(NULL));
+
+    int numProcessos, idProcesso;
+    MPI_Comm_size(MPI_COMM_WORLD, &numProcessos);
+    MPI_Comm_rank(MPI_COMM_WORLD, &idProcesso);
+
+    printf("totalProcs: %d, idProc %d\n", numProcessos, idProcesso);
+
+    if (idProcesso == 0) {
+        lerCoordenadas();
+    }
+
+    MPI_Bcast(cidades, NUM_CIDADES * sizeof(Coordenada), MPI_BYTE, 0, MPI_COMM_WORLD);
+
     Cromossomo melhorCromossomo;
 
     Cromossomo populacao[TAM_POPULACAO];
-    Cromossomo novaPopulacao[TAM_POPULACAO];
+    Cromossomo novaPopulacao[TAM_POPULACAO / numProcessos];
+
 
     inicializarPopulacao(populacao);
+
 
     int geracao;
     melhorCromossomo = populacao[0];
@@ -216,8 +232,9 @@ int main() {
 
     imprimirMelhorCromossomo(&melhorCromossomo);
 
-    clock_t end = clock();
-    double elapsed = (double) (end - start) / CLOCKS_PER_SEC;
-    printf("\nTempo: %.5f segundos\n", elapsed);
+//    clock_t end = clock();
+//    double elapsed = (double) (end - start) / CLOCKS_PER_SEC;
+//    printf("\nTempo: %.5f segundos\n", elapsed);
+    MPI_Finalize();
     return 0;
 }
