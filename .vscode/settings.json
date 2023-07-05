@@ -4,5 +4,6 @@
         "math.h": "c",
         "stdlib.h": "c"
     },
-    "cmake.sourceDirectory": "/mnt/c/Users/matca/OneDrive/UFRRJ/2023.1/Programacao Paralela e Distribuida/Codigos/travelling-salesman-problem"
+    "cmake.sourceDirectory": "/mnt/c/Users/matca/OneDrive/UFRRJ/2023.1/Programacao Paralela e Distribuida/Codigos/travelling-salesman-problem",
+    "cmake.configureOnOpen": false
 }

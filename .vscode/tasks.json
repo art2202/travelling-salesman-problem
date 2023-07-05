@@ -48,6 +48,11 @@
             ],
             "group": "build",
             "detail": "Tarefa gerada pelo Depurador."
+        },
+        {
+            "label": "Bash Time",
+            "type": "shell",
+            "command": "time "
         }
     ],
     "version": "2.0.0"
