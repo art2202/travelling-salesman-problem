@@ -6,11 +6,10 @@
 #include <math.h>
 #include <time.h>
 
-#define NUM_CIDADES 50
-#define TAM_POPULACAO 500
-#define NUM_GERACOES 5000
-#define TAXA_MUTACAO 0.001
-
+#define NUM_CIDADES 200
+#define TAM_POPULACAO 600
+#define NUM_GERACOES 600
+#define TAXA_MUTACAO 0.1
 typedef struct {
     int genes[NUM_CIDADES];
     double fitness;
